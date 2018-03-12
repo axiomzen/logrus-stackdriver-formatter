@@ -1,4 +1,4 @@
-package formatter
+package stackdriver
 
 import (
 	"encoding/json"
