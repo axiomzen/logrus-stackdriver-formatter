@@ -1,4 +1,4 @@
-package stackdriver
+package formatter
 
 import (
 	"bytes"
@@ -8,9 +8,10 @@ import (
 	"testing"
 
 	"github.com/kr/pretty"
-
 	"github.com/sirupsen/logrus"
 )
+
+var org = "axiomzen"
 
 func TestFormatter(t *testing.T) {
 	skipTimestamp = true
@@ -70,9 +71,9 @@ var formatterTests = []struct {
 					"foo": "bar",
 				},
 				"reportLocation": map[string]interface{}{
-					"filePath":     "github.com/TV4/logrus-stackdriver-formatter/formatter_test.go",
-					"lineNumber":   28.0,
-					"functionName": "TestFormatter",
+					"filePath":     "github.com/" + org + "/logrus-stackdriver-formatter/formatter_test.go",
+					"lineNumber":   60.0,
+					"functionName": "glob..func2",
 				},
 			},
 		},
@@ -96,9 +97,9 @@ var formatterTests = []struct {
 					"foo": "bar",
 				},
 				"reportLocation": map[string]interface{}{
-					"filePath":     "github.com/TV4/logrus-stackdriver-formatter/formatter_test.go",
-					"lineNumber":   28.0,
-					"functionName": "TestFormatter",
+					"filePath":     "github.com/" + org + "/logrus-stackdriver-formatter/formatter_test.go",
+					"lineNumber":   86.0,
+					"functionName": "glob..func3",
 				},
 			},
 		},
@@ -129,9 +130,9 @@ var formatterTests = []struct {
 					"method": "GET",
 				},
 				"reportLocation": map[string]interface{}{
-					"filePath":     "github.com/TV4/logrus-stackdriver-formatter/formatter_test.go",
-					"lineNumber":   28.0,
-					"functionName": "TestFormatter",
+					"filePath":     "github.com/" + org + "/logrus-stackdriver-formatter/formatter_test.go",
+					"lineNumber":   116.0,
+					"functionName": "glob..func4",
 				},
 			},
 		},
