@@ -3,7 +3,7 @@ package main
 import (
 	"strconv"
 
-	stackdriver "github.com/TV4/logrus-stackdriver-formatter"
+	stackdriver "github.com/axiomzen/logrus-stackdriver-formatter"
 	"github.com/sirupsen/logrus"
 )
 

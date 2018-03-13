@@ -3,6 +3,8 @@ package stackdriver
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
+	"runtime"
 	"strconv"
 	"time"
 
@@ -59,8 +61,9 @@ type entry struct {
 
 // Formatter implements Stackdriver formatting for logrus.
 type Formatter struct {
-	Service string
-	Version string
+	Service    string
+	Version    string
+	skipRegexp *regexp.Regexp // skip function on the callstack matching this expression
 }
 
 // Option lets you configure the Formatter.
@@ -86,6 +89,7 @@ func NewFormatter(options ...Option) *Formatter {
 	for _, option := range options {
 		option(&fmtr)
 	}
+	fmtr.skipRegexp = regexp.MustCompile(`/logrus\.`)
 	return &fmtr
 }
 
@@ -94,7 +98,6 @@ func (f *Formatter) Format(e *logrus.Entry) ([]byte, error) {
 	severity := levelsToSeverity[e.Level]
 
 	ee := entry{
-
 		Message:  e.Message,
 		Severity: severity,
 		Context: &context{
@@ -116,6 +119,7 @@ func (f *Formatter) Format(e *logrus.Entry) ([]byte, error) {
 		// When using WithError(), the error is sent separately, but Error
 		// Reporting expects it to be a part of the message so we append it
 		// instead.
+
 		if err, ok := ee.Context.Data["error"]; ok {
 			ee.Message = fmt.Sprintf("%s: %s", e.Message, err)
 			delete(ee.Context.Data, "error")
@@ -132,8 +136,22 @@ func (f *Formatter) Format(e *logrus.Entry) ([]byte, error) {
 			}
 		}
 
+		// "reportLocation": {    // Required if no stack trace in 'message'.
 		// Extract report location from call stack.
-		c := stack.Caller(4)
+		// skip frames until the function is not from logrus package (or give up at 6)
+		skipFrames := 1
+		for ; skipFrames <= 8; skipFrames++ {
+			pc, _, _, ok := runtime.Caller(skipFrames)
+			if !ok {
+				break
+			}
+			details := runtime.FuncForPC(pc)
+			//fmt.Printf("frame: %d, func: %s\n", skipFrames, details.Name())
+			if !f.skipRegexp.MatchString(details.Name()) {
+				break
+			}
+		}
+		c := stack.Caller(skipFrames)
 
 		lineNumber, _ := strconv.ParseInt(fmt.Sprintf("%d", c), 10, 64)
 
