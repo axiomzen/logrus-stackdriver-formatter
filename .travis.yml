@@ -6,6 +6,7 @@ go:
 sudo: false
 
 install:
+  - go get github.com/golang/lint/golint
   - go get ./...
 
 script:
