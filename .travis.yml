@@ -7,7 +7,7 @@ sudo: false
 
 install:
   - go get github.com/golang/lint/golint
-  - go get ./...
+  - go get -t ./...
 
 script:
   - golint -set_exit_status
